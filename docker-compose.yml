@@ -1,33 +1,22 @@
 version: "3"
 services:
   cesi-backend:
+    image: daocloud.io/weicang/cesi:backend-2019.1006.01
     container_name: cesi-backend
     restart: on-failure
-    build:
-      context: .
-      dockerfile: .docker/Dockerfile.backend
     volumes:
-      - "./:/app:ro"
-      - "./defaults/cesi.conf.toml:/etc/cesi.conf.toml:ro"
+      - "./cesi.conf.toml:/etc/cesi.conf.toml:ro"
     ports:
-      - ${CESI_BACKEND_PORT}:5000
-    depends_on:
-      - products.example.com
-      - analysis.example.com
-      - monitoring.example.com
+      - 15000:5000
 
   cesi-frontend:
+    image: daocloud.io/weicang/cesi:frontend-2019.1006.02
     container_name: cesi-frontend
     restart: on-failure
-    build:
-      context: .
-      dockerfile: .docker/Dockerfile.frontend
-    volumes:
-      - "./cesi/ui/:/app:ro"
     ports:
-      - "${CESI_UI_PORT}:3000"
+      - "13000:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
     depends_on:
       - cesi-backend
 
@@ -40,7 +29,7 @@ services:
       - "./.docker/supervisor/bin/:/opt/cesi-dev/bin"
       - "/tmp/cesi-dev/logs/products/:/opt/cesi-dev/logs"
     ports:
-      - "9001:9001"
+      - "9004:9001"
 
   analysis.example.com:
     image: ef9n/supervisord:${SUPERVISOR_TAG}
